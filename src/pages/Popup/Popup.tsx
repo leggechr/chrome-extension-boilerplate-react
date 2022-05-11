@@ -167,6 +167,28 @@ class App extends React.Component<any, any> {
     ...INITIAL_STATE,
   };
 
+  componentDidMount() {
+    console.log('!!mounted popup');
+    chrome.runtime.onMessage.addListener(this.messageListener);
+  }
+
+  componentWillUnmount() {
+    chrome.runtime.onMessage.removeListener(this.messageListener);
+  }
+
+  messageListener = (
+    message: any,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: any
+  ) => {
+    const { chainId, accounts } = this.state;
+
+    if (message.essential.method === 'eth_requestAccounts') {
+      sendResponse({ chainId, accounts });
+    }
+    console.log('in the POPUP.TSX!!', message);
+  };
+
   public connect = async () => {
     // bridge url
     const bridge = 'https://bridge.walletconnect.org';
@@ -640,7 +662,6 @@ class App extends React.Component<any, any> {
   };
 
   public render = () => {
-    console.log('rendering popup.tsx');
     const {
       assets,
       address,
@@ -650,7 +671,9 @@ class App extends React.Component<any, any> {
       showModal,
       pendingRequest,
       result,
+      accounts,
     } = this.state;
+    console.log('accounts', accounts);
     return (
       <SLayout>
         <Column maxWidth={1000} spanHeight>

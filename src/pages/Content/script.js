@@ -23,9 +23,14 @@ import { WindowPostMessageStream } from '@metamask/post-message-stream';
 // 1. script ->
 
 // Create a stream to a remote provider:
+// const metamaskStream = new WindowPostMessageStream({
+//   name: 'script.js',
+//   target: 'content-script.js',
+// });
+
 const metamaskStream = new WindowPostMessageStream({
-  name: 'inpage',
-  target: 'contentscript',
+  name: 'script.js',
+  target: 'content-script.js',
 });
 
 // this will initialize the provider and set it as window.ethereum
@@ -35,13 +40,49 @@ const provider = initializeProvider({
 
 const request = provider.request;
 
-provider.request = (args) => {
-  // this should be talking to the popup
-  chrome.action.openPopup();
+provider.request = (args) =>
+  new Promise((res, rej) => {
+    // metamaskStream.on('data', (data) => {
+    //   // metamaskStream.destroy();
+    //   console.log('best day of my life', data);
+    //   res(data);
+    // });
+    console.log('provider.request');
 
-  // calls the implementation from the metamask provider library. This uses json-rpc-engine
-  request(args);
-};
+    window.addEventListener(
+      'message',
+      (event) => {
+        console.log('best day of my life');
+        if (event.data.type && event.data.type === 'FROM_CS') {
+          console.log('response', event.data.response);
+          res(event.data.response.accounts);
+        }
+      },
+      false
+    );
+
+    window.postMessage({
+      type: 'FROM_PAGE',
+      essential: args,
+    });
+    // metamaskStream.write()
+  });
+
+// provider.request = async (args) => {
+
+//   metamaskStream.on('')
+//   // this should be talking to the popup
+//   // metamaskStream.write(args);
+
+//   // send message to contentscript
+//   const result = await window.postMessage({
+//     type: 'FROM_PAGE',
+//     essential: args,
+//   });
+//   console.log('script received response', result);
+//   // calls the implementation from the metamask provider library. This uses json-rpc-engine
+//   // request(args);
+// };
 
 setGlobalProvider(provider);
 
