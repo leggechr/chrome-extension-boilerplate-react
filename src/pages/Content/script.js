@@ -34,11 +34,10 @@ const metamaskStream = new WindowPostMessageStream({
 });
 
 // this will initialize the provider and set it as window.ethereum
+// rather than using this provider here can we just use the walletConnect provider provided by the WC instance in the popup?
 const provider = initializeProvider({
   connectionStream: metamaskStream,
 });
-
-const request = provider.request;
 
 provider.request = (args) =>
   new Promise((res, rej) => {
@@ -47,7 +46,7 @@ provider.request = (args) =>
     //   console.log('best day of my life', data);
     //   res(data);
     // });
-    console.log('provider.request');
+    console.log('provider.request', args.method);
 
     window.addEventListener(
       'message',
@@ -55,7 +54,7 @@ provider.request = (args) =>
         console.log('best day of my life');
         if (event.data.type && event.data.type === 'FROM_CS') {
           console.log('response', event.data.response);
-          res(event.data.response.accounts);
+          res(event.data.response);
         }
       },
       false

@@ -181,12 +181,29 @@ class App extends React.Component<any, any> {
     sender: chrome.runtime.MessageSender,
     sendResponse: any
   ) => {
-    const { chainId, accounts } = this.state;
+    const { connector, chainId, accounts } = this.state;
+    const { networkId } = connector || {};
 
+    // array of accounts, one of these I think gives permission to open the window. It's restricted? This needs to be called the first time
     if (message.essential.method === 'eth_requestAccounts') {
-      sendResponse({ chainId, accounts });
+      console.log('eth_requestAccounts', accounts);
+      sendResponse(accounts);
     }
-    console.log('in the POPUP.TSX!!', message);
+    if (message.essential.method === 'eth_accounts') {
+      console.log('eth_accounts', accounts);
+      sendResponse(accounts);
+    }
+
+    // EIP155 Chain ID.
+    if (message.essential.method === 'eth_chainId') {
+      console.log('eth_chainId', chainId);
+      sendResponse(chainId.toString());
+    }
+
+    if (message.essential.method === 'net_version') {
+      console.log('net_version', networkId);
+      sendResponse(networkId)?.toString();
+    }
   };
 
   public connect = async () => {
