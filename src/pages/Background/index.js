@@ -1,8 +1,3 @@
-import { WindowPostMessageStream } from '@metamask/post-message-stream';
-
-import browser from 'webextension-polyfill';
-console.log('This is the background page.');
-
 // Create a stream to a remote provider:
 // const metamaskStream = new WindowPostMessageStream({
 //   name: 'background.js',
@@ -14,25 +9,24 @@ console.log('This is the background page.');
 //   console.log('HIII');
 // });
 // is this necessary?
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // opens the popup but still doesn't listen :(
   // chrome.tabs.create({ url: 'popup.html' });
   // await chrome.action.setPopup({ popup: 'popup.html' });
 
   // open the popup here. this probably should happen like metamask where it isn't actually a popup it's a window
 
-  console.log('background sending message');
+  console.log(
+    '4. (background.js) message received + passing along sender',
+    sender
+  );
   chrome.runtime.sendMessage(message, (response) => {
-    console.log('background received a response', response);
+    console.log(
+      '7. (background.js) message received + passing along',
+      response
+    );
     sendResponse(response);
   });
+
+  return true;
 });
-
-// connectRemote = (remotePort) => {
-//   remotePort.onMessage.addListener((ms) => {
-//     chrome.action.openPopup();
-//     console.log('HIII');s
-//   });
-// };
-
-// chrome.runtime.

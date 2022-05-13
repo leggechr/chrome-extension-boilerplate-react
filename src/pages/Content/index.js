@@ -18,13 +18,16 @@ const metamaskStream = new WindowPostMessageStream({
 window.addEventListener(
   'message',
   (event) => {
-    // console.log('message recieved at contentscript!');
+    // console.log('2. (contentscript) message recieved', event);
     if (event.data.type && event.data.type === 'FROM_PAGE') {
-      console.log('contentscript sending message=!');
+      console.log('3. (contentscript) passing message along');
       chrome.runtime.sendMessage(
         { essential: event.data.essential },
         (response) => {
-          console.log('content script received a message', response);
+          console.log(
+            '8. (contentscript) message received + passing along',
+            response
+          );
           window.postMessage({ type: 'FROM_CS', response });
           // metamaskStream.write(response);
           // send back to script

@@ -181,12 +181,18 @@ class App extends React.Component<any, any> {
     sender: chrome.runtime.MessageSender,
     sendResponse: any
   ) => {
+    // TODO: make sure its from this extension and not any extension
+    if (!sender.url?.startsWith('chrome-extension:')) {
+      // don't listen to messages from the content script
+      return;
+    }
+    console.log('5. (popup.tsx) message received sender', sender, message);
     const { connector, chainId, accounts } = this.state;
     const { networkId } = connector || {};
 
     // array of accounts, one of these I think gives permission to open the window. It's restricted? This needs to be called the first time
     if (message.essential.method === 'eth_requestAccounts') {
-      console.log('eth_requestAccounts', accounts);
+      console.log('6. (popup.tsx) sending eth_requestAccounts', accounts);
       sendResponse(accounts);
     }
     if (message.essential.method === 'eth_accounts') {
@@ -204,6 +210,8 @@ class App extends React.Component<any, any> {
       console.log('net_version', networkId);
       sendResponse(networkId)?.toString();
     }
+
+    return true;
   };
 
   public connect = async () => {
