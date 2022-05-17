@@ -186,13 +186,13 @@ class App extends React.Component<any, any> {
       // don't listen to messages from the content script
       return;
     }
-    console.log('5. (popup.tsx) message received sender', sender, message);
+    console.log('4. (popup.tsx) message received sender', sender, message);
     const { connector, chainId, accounts } = this.state;
     const { networkId } = connector || {};
 
     // array of accounts, one of these I think gives permission to open the window. It's restricted? This needs to be called the first time
     if (message.essential.method === 'eth_requestAccounts') {
-      console.log('6. (popup.tsx) sending eth_requestAccounts', accounts);
+      console.log('5. (popup.tsx) sending eth_requestAccounts', accounts);
       sendResponse(accounts);
     }
     if (message.essential.method === 'eth_accounts') {

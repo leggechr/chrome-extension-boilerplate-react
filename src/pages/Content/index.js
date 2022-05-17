@@ -10,27 +10,19 @@ s.onload = () => {
   s.parentNode.removeChild(s);
 };
 
-const metamaskStream = new WindowPostMessageStream({
-  name: 'content-script.js',
-  target: 'script.js',
-});
-
 window.addEventListener(
   'message',
   (event) => {
-    // console.log('2. (contentscript) message recieved', event);
     if (event.data.type && event.data.type === 'FROM_PAGE') {
-      console.log('3. (contentscript) passing message along');
+      console.log('2. (contentscript) passing message along');
       chrome.runtime.sendMessage(
         { essential: event.data.essential },
         (response) => {
           console.log(
-            '8. (contentscript) message received + passing along',
+            '7. (contentscript) message received + passing along',
             response
           );
           window.postMessage({ type: 'FROM_CS', response });
-          // metamaskStream.write(response);
-          // send back to script
         }
       );
     }

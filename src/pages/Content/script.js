@@ -12,15 +12,16 @@ const provider = initializeProvider({
   connectionStream: metamaskStream,
 });
 
+// return a promise so that the async message passing happens synchronously
 provider.request = (args) =>
   new Promise((res, rej) => {
-    // console.log('1. (script.js): provider.request', args.method);
+    console.log('1. (script.js): provider.request', args.method);
 
     const finalMessageListener = (event) => {
-      // console.log('9. (script) message received', event);
       if (event.data.type && event.data.type === 'FROM_CS') {
-        console.log('10. (script) FINALLY!', event.data.response);
+        console.log('8. (script) FINALLY!', event.data.response);
         window.removeEventListener('message', finalMessageListener);
+        // resolve the promise when a response comes back.
         res(event.data.response);
       }
     };
